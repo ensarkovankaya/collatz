@@ -7,11 +7,13 @@ class Collatz:
 
     def __init__(self):
 
-        self.CACHE = {}  # Cache results of calculate function
+        self.CACHE = {}  # Cache results of calculate function if savecalculations is True
         self.usecache = True  # if False it will recalculate number every time and not use CACHE
+        self.savecalculations = True
+        self.saveresults = True
         self.TREE = []  # Each result store here
         self.recalculate = False  # If True, it will recalculate given start function paramater
-        self.CALCULATIONS = {}  # Calculation final results cache in here
+        self.CALCULATIONS = {}  # Calculation final results cache in here if saveresults is True
 
     def _set_time(self):
         return timeit.default_timer()
@@ -58,7 +60,8 @@ class Collatz:
             y = n
             n = self.calculate(n)
             self.TREE.append(n)
-            self.CACHE.setdefault(y, n)
+            if self.savecalculations:
+                self.CACHE.setdefault(y, n)
             step += 1
 
         ended = self._set_time()
@@ -73,5 +76,6 @@ class Collatz:
             "Recalculated": True,
         }
 
-        self.CALCULATIONS.setdefault(number, result)
+        if self.saveresults:
+            self.CALCULATIONS.setdefault(number, result)
         return result
