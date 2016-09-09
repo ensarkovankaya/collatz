@@ -7,28 +7,27 @@ class Collatz:
 
     def __init__(self):
 
-        self.CACHE = {}
-        self.usecache = True
-        self.TREE = []
-        self.recalculate = False
-        self.CALCULATIONS = {}
+        self.CACHE = {}  # Cache results of calculate function
+        self.usecache = True  # if False it will recalculate number every time and not use CACHE
+        self.TREE = []  # Each result store here
+        self.recalculate = False  # If True, it will recalculate given start function paramater
+        self.CALCULATIONS = {}  # Calculation final results cache in here
 
     def _set_time(self):
         return timeit.default_timer()
 
     def calculate(self, s):
 
+        if self.usecache:
+            if s in self.CACHE:
+                return self.CACHE.get(s)
+
         if s == 1:
-            self.TREE.append(s)
             return s
         elif s % 2 == 0:
-            c = s / 2
-            self.TREE.append(c)
-            return c
+            return s / 2
         else:
-            c = s * 3 + 1
-            self.TREE.append(c)
-            return c
+            return s * 3 + 1
 
     def _clean(self):
         self.TREE = []
@@ -43,26 +42,22 @@ class Collatz:
             raise ValueError(u"Variable must be a number.")
         if n <= 1:
             raise ValueError(u"Number can not be 1 or lower.")
+
+        # if calculation done before return last result
         if n in self.CALCULATIONS and not self.recalculate:
             result = self.CALCULATIONS.get(n)
             result["Recalculated"] = False
             return result
-        n = int(n)
 
+        n = int(n)
         started = self._set_time()
         step = 0
         number = n
+
         while n != 1:
-
-            if self.usecache:
-                if n in self.CACHE:
-                    n = self.CACHE.get(n)
-                    self.TREE.append(n)
-                    step += 1
-                    continue
-
             y = n
             n = self.calculate(n)
+            self.TREE.append(n)
             self.CACHE.setdefault(y, n)
             step += 1
 
